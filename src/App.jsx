@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 
-<<<<<<< HEAD
+
 import Home from "./Home";
 import Profile from "./Profile";
 import Charts from "./Charts";
 import Flower from "./Flower";
-=======
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -285,7 +284,6 @@ function Flower() {
     </div>
   );
 }
->>>>>>> 1d79de086f81f1706e2c5f08deb737a7522ef550
 
 function App() {
   return (
