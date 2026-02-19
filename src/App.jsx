@@ -30,7 +30,7 @@ function Home() {
   return (
     <div className="fade-in">
       <h1>Hydration Buddy 🎉</h1>
-      <p>Lauren, Alexis, Keerthana B, Ronan 😎</p>
+      <p>Lauren, Alexis, Keerthana, Ronan 😎</p>
 
       <img
         src={splash}
