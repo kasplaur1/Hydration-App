@@ -112,3 +112,278 @@ p {
 .flower-sway {
   animation: sway 3s ease-in-out infinite;
 }
+
+/* =========================
+   HOME PAGE ONLY 
+   ========================= */
+
+.home-wrap {
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+}
+
+/* Header */
+.home-header {
+  text-align: center;
+  margin-top: 6px;
+}
+
+.home-title {
+  margin: 0;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  /* aesthetic font stack without importing */
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, "SF Pro Display", Arial, sans-serif;
+  color: #0b1b3a; /* dark navy */
+}
+
+.home-names {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  color: rgba(11, 27, 58, 0.70);
+}
+
+/* Layout */
+.home-layout {
+  width: min(1000px, 95vw);
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 34px;
+  align-items: start;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+
+/* Card — cream glass */
+.home-card {
+  text-align: left;
+  padding: 20px;
+  border-radius: 22px;
+  background: rgba(255, 252, 245, 0.75); /* cream */
+  border: 1px solid rgba(11, 27, 58, 0.10);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 60px rgba(11, 27, 58, 0.10);
+}
+
+.home-card-title {
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: #0b1b3a;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Arial, sans-serif;
+}
+
+.home-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.home-label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: rgba(11, 27, 58, 0.78);
+}
+
+.home-input {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(11, 27, 58, 0.16);
+  background: rgba(255, 255, 255, 0.85);
+  outline: none;
+  font-size: 1rem;
+}
+
+.home-input:focus {
+  border-color: rgba(20, 110, 190, 0.55);
+  box-shadow: 0 0 0 4px rgba(20, 110, 190, 0.16);
+}
+
+/* Buttons */
+.home-btn {
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(11, 27, 58, 0.12);
+  cursor: pointer;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #0b1b3a, #1b4aa8); /* dark navy -> royal */
+  box-shadow: 0 14px 34px rgba(11, 27, 58, 0.22);
+}
+
+.home-btn:hover {
+  transform: translateY(-1px);
+}
+
+.home-btn-secondary {
+  margin-top: 14px;
+  background: rgba(255, 255, 255, 0.65);
+  color: #0b1b3a;
+  box-shadow: none;
+}
+
+/* Quick buttons — spaced out, not crowded */
+.home-quick {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+@media (max-width: 520px) {
+  .home-quick {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-chip {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(11, 27, 58, 0.14);
+  background: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  font-weight: 750;
+  color: rgba(11, 27, 58, 0.92);
+}
+
+.home-chip:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+/* =========================
+   Bottle — navy top, clearer notches
+   ========================= */
+
+.bottle {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.bottle-neck {
+  width: 92px;
+  height: 30px;
+  border-radius: 18px 18px 0 0;
+  background: linear-gradient(135deg, #07122a, #0b1b3a); /* NAVY */
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 10px 26px rgba(11, 27, 58, 0.20);
+}
+
+.bottle-body {
+  position: relative;
+  width: 270px;
+  height: 440px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 252, 245, 0.40); /* cream glass */
+  border: 1px solid rgba(11, 27, 58, 0.14);
+  box-shadow: 0 22px 70px rgba(11, 27, 58, 0.14);
+  backdrop-filter: blur(12px);
+}
+
+/* subtle shine */
+.bottle-body::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  width: 72px;
+  height: 86%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.30);
+}
+
+/* water — richer blue gradient */
+.water {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(to top, #1b7dd8, #7bd3ff);
+  transition: height 0.45s ease;
+  clip-path: ellipse(110% 90% at 50% 100%);
+}
+
+/* label */
+.bottle-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-size: 2.1rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #0b1b3a;
+  text-shadow: 0 10px 40px rgba(11, 27, 58, 0.12);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Arial, sans-serif;
+}
+
+.bottle-small {
+  margin-top: 8px;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: rgba(11, 27, 58, 0.72);
+}
+
+/* Notches — MUCH more visible */
+.bottle-marks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.mark {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  opacity: 0.9;
+}
+
+/* thicker + higher contrast */
+.mark-line {
+  height: 3px;
+  width: 64%;
+  border-radius: 999px;
+  background: rgba(11, 27, 58, 0.28);
+}
+
+/* put the text on the right like a real bottle */
+.mark-text {
+  font-size: 0.85rem;
+  font-weight: 850;
+  color: rgba(11, 27, 58, 0.70);
+  background: rgba(255, 252, 245, 0.75);
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(11, 27, 58, 0.10);
+}
+
+/* When reached, glow */
+.mark.hit .mark-line {
+  background: rgba(20, 110, 190, 0.75);
+  box-shadow: 0 0 0 5px rgba(20, 110, 190, 0.14);
+}
+
+.mark.hit .mark-text {
+  color: rgba(20, 110, 190, 0.95);
+  border-color: rgba(20, 110, 190, 0.22);
+}
