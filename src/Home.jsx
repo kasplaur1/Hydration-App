@@ -39,7 +39,7 @@ export default function Home() {
     <div className="fade-in home-wrap">
       <div className="home-header">
         <h1 className="home-title">Hydration Buddy 💧</h1>
-        <p className="home-names">Lauren • Alexis Boy • Keerthana • Ronan</p>
+        <p className="home-names">Lauren • Alexis • Keerthana • Ronan</p>
       </div>
 
       <div className="home-layout">
