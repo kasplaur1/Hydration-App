@@ -12,11 +12,27 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-/* -------------------------
-   WEEKLY LABELS
--------------------------- */
-function getWeeklyLabels() {
-  const labels = [];
+/* ----------------------------------------------------
+   DATE HELPERS
+----------------------------------------------------- */
+
+function toISO(date) {
+  return date.toISOString().split("T")[0];
+}
+
+function formatShortDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+/* ----------------------------------------------------
+   WEEK RANGE (MON → SUN)
+----------------------------------------------------- */
+
+function getWeeklyDateRange() {
   const today = new Date();
 
   const monday = new Date(today);
@@ -24,60 +40,104 @@ function getWeeklyLabels() {
   const diff = monday.getDate() - day + (day === 0 ? -6 : 1);
   monday.setDate(diff);
 
+  const dates = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
-
-    const weekday = d.toLocaleDateString("en-US", { weekday: "long" });
-    const month = d.getMonth() + 1;
-    const dayNum = d.getDate();
-
-    labels.push(`${weekday} (${month}/${dayNum})`);
+    dates.push(toISO(d));
   }
 
-  return labels;
+  return dates;
 }
 
-/* -------------------------
-   WEEKLY DATA
--------------------------- */
-function getWeeklyData(values) {
-  const data = [...values];
-  while (data.length < 7) data.push(null);
-  return data.slice(0, 7);
+function getWeeklyLabels() {
+  return getWeeklyDateRange().map(formatShortDate);
 }
+
+/* ----------------------------------------------------
+   MAIN COMPONENT
+----------------------------------------------------- */
 
 function Charts() {
   const [tab, setTab] = useState("weekly");
 
-  const [weeklyValues, setWeeklyValues] = useState([3, 5, 2]);
-  const [weeklyInput, setWeeklyInput] = useState("");
+  const [hydrationEntries, setHydrationEntries] = useState([
+    { date: "2026-02-15", cups: 3 },
+    { date: "2026-02-16", cups: 5 },
+    { date: "2026-02-17", cups: 2 },
+  ]);
 
-  const addWeekly = () => {
-    if (weeklyInput === "") return;
-    setWeeklyValues([...weeklyValues, Number(weeklyInput)]);
-    setWeeklyInput("");
+  const [inputValue, setInputValue] = useState("");
+
+  const addHydration = () => {
+    if (inputValue === "") return;
+
+    const todayISO = toISO(new Date());
+
+    setHydrationEntries([
+      ...hydrationEntries,
+      { date: todayISO, cups: Number(inputValue) },
+    ]);
+
+    setInputValue("");
   };
 
-  const [monthlyValues, setMonthlyValues] = useState([10, 12, 8, 15]);
-  const [monthlyInput, setMonthlyInput] = useState("");
+  /* ----------------------------------------------------
+     WEEKLY DATA
+  ----------------------------------------------------- */
+  function getWeeklyData() {
+    const weekDates = getWeeklyDateRange();
 
-  const addMonthly = () => {
-    if (monthlyInput === "") return;
-    setMonthlyValues([...monthlyValues, Number(monthlyInput)]);
-    setMonthlyInput("");
-  };
+    return weekDates.map((dateISO) => {
+      const entry = hydrationEntries.find((e) => e.date === dateISO);
+      return entry ? entry.cups : null;
+    });
+  }
 
+  /* ----------------------------------------------------
+     MONTHLY DATA
+  ----------------------------------------------------- */
+  function getMonthlyLabels() {
+    return hydrationEntries.map((e) => formatShortDate(e.date));
+  }
+
+  function getMonthlyData() {
+    return hydrationEntries.map((e) => e.cups);
+  }
+
+  /* ----------------------------------------------------
+     CHART OPTIONS — horizontal labels + black text
+----------------------------------------------------- */
   const chartOptions = {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        labels: { font: { size: 18 } },
+        labels: {
+          font: { size: 18 },
+          color: "black",
+        },
+      },
+      tooltip: {
+        titleColor: "black",
+        bodyColor: "black",
       },
     },
     scales: {
-      x: { ticks: { font: { size: 16 } } },
-      y: { ticks: { font: { size: 16 } } },
+      x: {
+        ticks: {
+          font: { size: 16 },
+          color: "black",
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: false,
+        },
+      },
+      y: {
+        ticks: {
+          font: { size: 16 },
+          color: "black",
+        },
+      },
     },
   };
 
@@ -101,16 +161,24 @@ function Charts() {
         </button>
       </div>
 
+      {/* WEEKLY VIEW */}
       {tab === "weekly" && (
         <div>
-          <div className="chart-container">
+          <div
+            className="chart-container"
+            style={{
+              width: "100%",
+              height: "550px",   // ← bigger chart height
+              margin: "0 auto",
+            }}
+          >
             <Bar
               data={{
                 labels: getWeeklyLabels(),
                 datasets: [
                   {
                     label: "Weekly Hydration (cups)",
-                    data: getWeeklyData(weeklyValues),
+                    data: getWeeklyData(),
                     backgroundColor: "#4db8ff",
                   },
                 ],
@@ -122,25 +190,33 @@ function Charts() {
           <div style={{ marginTop: "20px" }}>
             <input
               type="number"
-              value={weeklyInput}
-              onChange={(e) => setWeeklyInput(e.target.value)}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
               placeholder="Add daily hydration"
             />
-            <button onClick={addWeekly}>Add</button>
+            <button onClick={addHydration}>Add</button>
           </div>
         </div>
       )}
 
+      {/* MONTHLY VIEW */}
       {tab === "monthly" && (
         <div>
-          <div className="chart-container">
+          <div
+            className="chart-container"
+            style={{
+              width: "100%",
+              height: "550px",   // ← bigger chart height
+              margin: "0 auto",
+            }}
+          >
             <Bar
               data={{
-                labels: monthlyValues.map((_, i) => `Entry ${i + 1}`),
+                labels: getMonthlyLabels(),
                 datasets: [
                   {
                     label: "Monthly Hydration (cups)",
-                    data: monthlyValues,
+                    data: getMonthlyData(),
                     backgroundColor: "#4db8ff",
                   },
                 ],
@@ -152,11 +228,11 @@ function Charts() {
           <div style={{ marginTop: "20px" }}>
             <input
               type="number"
-              value={monthlyInput}
-              onChange={(e) => setMonthlyInput(e.target.value)}
-              placeholder="Add monthly hydration"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Add daily hydration"
             />
-            <button onClick={addMonthly}>Add</button>
+            <button onClick={addHydration}>Add</button>
           </div>
         </div>
       )}
