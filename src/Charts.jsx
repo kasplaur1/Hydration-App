@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import WeeklyTracker from "./components/Charts/WeeklyTracker.jsx";
-import MonthlyTracker from "./components/Charts/MonthlyTracker.jsx";
+import WeeklyTracker from "./Charts/WeeklyTracker.jsx";
+import MonthlyTracker from "./Charts/MonthlyTracker.jsx";
 
 export default function Charts() {
   const [activeTab, setActiveTab] = useState("weekly");
