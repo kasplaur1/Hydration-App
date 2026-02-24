@@ -6,11 +6,10 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-export default function Home() {
+export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
   const goalCups = 8;
   const goalMl = goalCups * ML_PER_CUP;
 
-  const [loggedMl, setLoggedMl] = useState(0);
   const [inputCups, setInputCups] = useState("");
 
   const loggedCups = loggedMl / ML_PER_CUP;
@@ -32,6 +31,7 @@ export default function Home() {
 
   function reset() {
     setLoggedMl(0);
+    setResetTrigger((prev) => prev + 1); // 🔥 triggers flower reset
     setInputCups("");
   }
 
@@ -74,7 +74,7 @@ export default function Home() {
               })}
             </div>
 
-            {/* Label — moved up and smaller */}
+            {/* Label */}
             <div
               className="bottle-label"
               style={{
@@ -101,8 +101,6 @@ export default function Home() {
                     fontWeight: 800,
                     letterSpacing: "-0.02em",
                     color: "#0b1b3a",
-                    fontFamily:
-                      "ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Arial",
                   }}
                 >
                   {loggedMl === 0 ? "Start sipping!" : `${Math.round(percent)}%`}
@@ -143,7 +141,7 @@ export default function Home() {
                   borderRadius: "14px",
                   border: "1px solid rgba(11,27,58,0.16)",
                   background: "rgba(255,255,255,0.9)",
-                  color: "#0b1b3a",       // FIXED: text visible
+                  color: "#0b1b3a",
                   fontWeight: 600,
                   fontSize: "1rem",
                 }}
