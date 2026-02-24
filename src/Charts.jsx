@@ -5,15 +5,28 @@ import MonthlyTracker from "./Charts/MonthlyTracker.jsx";
 export default function Charts() {
   const [activeTab, setActiveTab] = useState("weekly");
 
+  // hydration data state
+  const [hydrationEntries, setHydrationEntries] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+
+  function addHydration() {
+    if (!inputValue) return;
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    setHydrationEntries([
+      ...hydrationEntries,
+      { date: today, cups: Number(inputValue) },
+    ]);
+
+    setInputValue("");
+  }
+
   return (
     <div className="charts-root fade-in">
 
-      {/* PAGE HEADER */}
-      <h1 className="hb-header" style={{ color: "black" }}>
-        Your Charts
-      </h1>
+      <h1 className="hb-header">Your Charts</h1>
 
-      {/* TABS */}
       <div className="chart-tabs">
         <button
           className={activeTab === "weekly" ? "active-tab" : ""}
@@ -30,8 +43,16 @@ export default function Charts() {
         </button>
       </div>
 
-      {/* ACTIVE VIEW */}
-      {activeTab === "weekly" ? <WeeklyTracker /> : <MonthlyTracker />}
+      {activeTab === "weekly" ? (
+        <WeeklyTracker
+          hydrationEntries={hydrationEntries}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          addHydration={addHydration}
+        />
+      ) : (
+        <MonthlyTracker hydrationEntries={hydrationEntries} />
+      )}
     </div>
   );
 }
