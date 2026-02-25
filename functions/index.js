@@ -1,32 +1,32 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
-const {setGlobalOptions} = require("firebase-functions");
-const {onRequest} = require("firebase-functions/https");
+const { setGlobalOptions } = require("firebase-functions");
+const { https } = require("firebase-functions");
 const logger = require("firebase-functions/logger");
 
-// For cost control, you can set the maximum number of containers that can be
-// running at the same time. This helps mitigate the impact of unexpected
-// traffic spikes by instead downgrading performance. This limit is a
-// per-function limit. You can override the limit for each function using the
-// `maxInstances` option in the function's options, e.g.
-// `onRequest({ maxInstances: 5 }, (req, res) => { ... })`.
-// NOTE: setGlobalOptions does not apply to functions using the v1 API. V1
-// functions should each use functions.runWith({ maxInstances: 10 }) instead.
-// In the v1 API, each function can only serve one request per container, so
-// this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+// Simple "reminder" function (no email)
+exports.sendWaterReminder = https.onCall(async (data, context) => {
+  try {
+    const userId = data.userId || "unknown user";
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+    // Log that a reminder was requested
+    logger.info(`Water reminder requested for user: ${userId}`);
+
+    // You can return any data to the client
+    return {
+      success: true,
+      message: `Reminder scheduled for ${userId}!`
+    };
+  } catch (err) {
+    // Log any unexpected errors
+    logger.error("sendWaterReminder error:", {
+      message: err.message,
+      stack: err.stack
+    });
+
+    throw new https.HttpsError(
+      "internal",
+      "Failed to process reminder. Check logs."
+    );
+  }
+});
