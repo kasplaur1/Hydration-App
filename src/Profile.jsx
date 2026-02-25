@@ -9,7 +9,7 @@ import {
 
 const GOAL_OPTIONS = [
   "Drink 8 cups of water",
-  "Finish a 1-liter bottle",
+  "Drink 4 cups of water",
   "Hydrate every hour",
   "Morning hydration routine",
   "Evening hydration routine"
