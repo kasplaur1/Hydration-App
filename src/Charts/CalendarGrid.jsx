@@ -1,9 +1,10 @@
 import React from "react";
 
+// 🔹 normalize dates when summing
 function getTotalForDate(entries, iso) {
   return entries
-    .filter((e) => e.date === iso)
-    .reduce((sum, e) => sum + e.cups, 0);
+    .filter((e) => e.dateISO === iso)   // 🔥 updated for Firestore
+    .reduce((sum, e) => sum + (e.cups || 0), 0);
 }
 
 const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

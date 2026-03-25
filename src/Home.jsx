@@ -1,4 +1,13 @@
 import { useMemo, useState } from "react";
+import { auth, db } from "./firebase";
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
 const ML_PER_CUP = 240;
 
@@ -20,19 +29,49 @@ export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
 
   const notchFractions = [0.25, 0.5, 0.75, 1];
 
-  function addWater(e) {
+  // 🔥 Add water → Firestore
+  async function addWater(cups) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const ml = cups * ML_PER_CUP;
+    const todayISO = new Date().toISOString().slice(0, 10);
+
+    const logsRef = collection(db, "users", user.uid, "logs");
+
+    await addDoc(logsRef, {
+      cups,
+      ml,
+      dateISO: todayISO,
+      timestamp: new Date(),
+    });
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
     const cups = Number(inputCups);
-    if (!Number.isFinite(cups) || cups <= 0) return;
+    if (!cups || cups <= 0) return;
 
-    setLoggedMl((prev) => prev + cups * ML_PER_CUP);
+    await addWater(cups);
     setInputCups("");
   }
 
-  function reset() {
+  // 🔥 Reset Today → delete today's logs from Firestore
+  async function reset() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const todayISO = new Date().toISOString().slice(0, 10);
+    const logsRef = collection(db, "users", user.uid, "logs");
+    const q = query(logsRef, where("dateISO", "==", todayISO));
+
+    const snapshot = await getDocs(q);
+    snapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+
     setLoggedMl(0);
-    setResetTrigger((prev) => prev + 1); // 🔥 triggers flower reset
-    setInputCups("");
+    setResetTrigger((prev) => prev + 1);
   }
 
   return (
@@ -125,7 +164,7 @@ export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
         <div className="home-card">
           <h2 className="home-card-title">Log Water</h2>
 
-          <form onSubmit={addWater} className="home-form">
+          <form onSubmit={handleSubmit} className="home-form">
             <label className="home-label">
               Amount (cups)
               <input
@@ -135,16 +174,6 @@ export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
                 value={inputCups}
                 onChange={(e) => setInputCups(e.target.value)}
                 placeholder="e.g., 1.5"
-                style={{
-                  height: "46px",
-                  padding: "0 14px",
-                  borderRadius: "14px",
-                  border: "1px solid rgba(11,27,58,0.16)",
-                  background: "rgba(255,255,255,0.9)",
-                  color: "#0b1b3a",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                }}
               />
             </label>
 
@@ -157,21 +186,21 @@ export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
             <button
               className="home-chip"
               type="button"
-              onClick={() => setLoggedMl((p) => p + 1 * ML_PER_CUP)}
+              onClick={() => addWater(1)}
             >
               +1 cup
             </button>
             <button
               className="home-chip"
               type="button"
-              onClick={() => setLoggedMl((p) => p + 2 * ML_PER_CUP)}
+              onClick={() => addWater(2)}
             >
               +2 cups
             </button>
             <button
               className="home-chip"
               type="button"
-              onClick={() => setLoggedMl((p) => p + 3 * ML_PER_CUP)}
+              onClick={() => addWater(3)}
             >
               +3 cups
             </button>

@@ -4,8 +4,9 @@ import { barOptions, COLORS } from "./chartUtils.js";
 import { toISO, formatShortDate } from "./dateUtils.js";
 
 function getWeeklyDateRange(hydrationEntries) {
+  // Use Firestore field: dateISO
   const referenceDate = hydrationEntries.length
-    ? new Date(hydrationEntries[hydrationEntries.length - 1].date)
+    ? new Date(hydrationEntries[hydrationEntries.length - 1].dateISO)
     : new Date();
 
   const monday = new Date(referenceDate);
@@ -23,12 +24,7 @@ function getWeeklyDateRange(hydrationEntries) {
   return dates;
 }
 
-function WeeklyTracker({
-  hydrationEntries,
-  inputValue,
-  setInputValue,
-  addHydration,
-}) {
+function WeeklyTracker({ hydrationEntries }) {
   const weeklyRange = useMemo(
     () => getWeeklyDateRange(hydrationEntries),
     [hydrationEntries]
@@ -39,9 +35,10 @@ function WeeklyTracker({
   const data = useMemo(() => {
     const values = weeklyRange.map((dateISO) => {
       const total = hydrationEntries
-        .filter((e) => e.date === dateISO)
-        .reduce((sum, e) => sum + e.cups, 0);
-      return total || null;
+        .filter((e) => e.dateISO === dateISO)
+        .reduce((sum, e) => sum + (e.cups || 0), 0);
+
+      return total || 0;
     });
 
     return {
@@ -60,16 +57,6 @@ function WeeklyTracker({
     <div>
       <div className="chart-container chart-container-large">
         <Bar data={data} options={barOptions} />
-      </div>
-
-      <div className="input-row">
-        <input
-          type="number"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Add daily hydration"
-        />
-        <button onClick={addHydration}>Add</button>
       </div>
     </div>
   );

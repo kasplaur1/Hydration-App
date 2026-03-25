@@ -10,8 +10,8 @@ function getPointsForWeek(weekCells, hydrationEntries) {
     if (!cell) return;
 
     const total = hydrationEntries
-      .filter((e) => e.date === cell.iso)
-      .reduce((sum, e) => sum + e.cups, 0);
+      .filter((e) => e.dateISO === cell.iso)   // 🔥 updated for Firestore
+      .reduce((sum, e) => sum + (e.cups || 0), 0);
 
     if (total > 0) {
       points.push({ x: index, y: total });

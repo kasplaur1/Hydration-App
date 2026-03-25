@@ -1,30 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import WeeklyTracker from "./Charts/WeeklyTracker.jsx";
 import MonthlyTracker from "./Charts/MonthlyTracker.jsx";
 
+import { auth, db } from "./firebase.js";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+
 export default function Charts() {
   const [activeTab, setActiveTab] = useState("weekly");
-
-  // hydration data state
   const [hydrationEntries, setHydrationEntries] = useState([]);
-  const [inputValue, setInputValue] = useState("");
 
-  function addHydration() {
-    if (!inputValue) return;
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) return;
 
-    const today = new Date().toISOString().slice(0, 10);
+    const logsRef = collection(db, "users", user.uid, "logs");
+    const q = query(logsRef, orderBy("timestamp", "asc"));
 
-    setHydrationEntries([
-      ...hydrationEntries,
-      { date: today, cups: Number(inputValue) },
-    ]);
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const entries = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    setInputValue("");
-  }
+      setHydrationEntries(entries);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div className="charts-root fade-in">
-
       <h1 className="hb-header">Your Charts</h1>
 
       <div className="chart-tabs">
@@ -44,12 +54,7 @@ export default function Charts() {
       </div>
 
       {activeTab === "weekly" ? (
-        <WeeklyTracker
-          hydrationEntries={hydrationEntries}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          addHydration={addHydration}
-        />
+        <WeeklyTracker hydrationEntries={hydrationEntries} />
       ) : (
         <MonthlyTracker hydrationEntries={hydrationEntries} />
       )}
