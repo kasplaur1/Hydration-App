@@ -15,11 +15,17 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
-const ML_PER_CUP = 240;
-
 function App() {
   const [loggedMl, setLoggedMl] = useState(0);
   const [resetTrigger, setResetTrigger] = useState(0);
+  const [goalCups, setGoalCups] = useState(() => {
+    const saved = Number(localStorage.getItem("goalCups"));
+    return Number.isFinite(saved) && saved > 0 ? saved : 8;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("goalCups", String(goalCups));
+  }, [goalCups]);
 
   useEffect(() => {
     const unsubscribeAuth = auth.onAuthStateChanged((user) => {
@@ -66,10 +72,14 @@ function App() {
               loggedMl={loggedMl}
               setLoggedMl={setLoggedMl}
               setResetTrigger={setResetTrigger}
+              goalCups={goalCups}
             />
           }
         />
-        <Route path="/profile" element={<Profile />} />
+        <Route
+          path="/profile"
+          element={<Profile goalCups={goalCups} setGoalCups={setGoalCups} />}
+        />
         <Route path="/charts" element={<Charts />} />
         <Route
           path="/flower"

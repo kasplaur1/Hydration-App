@@ -15,9 +15,14 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
 
-export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
-  const goalCups = 8;
-  const goalMl = goalCups * ML_PER_CUP;
+export default function Home({
+  loggedMl,
+  setLoggedMl,
+  setResetTrigger,
+  goalCups = 8,
+}) {
+  const safeGoalCups = goalCups > 0 ? goalCups : 8;
+  const goalMl = safeGoalCups * ML_PER_CUP;
 
   const [inputCups, setInputCups] = useState("");
 
@@ -91,7 +96,7 @@ export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
             {/* Notches */}
             <div className="bottle-marks" aria-hidden="true">
               {notchFractions.map((f) => {
-                const notchCups = goalCups * f;
+                const notchCups = safeGoalCups * f;
                 const notchPct = f * 100;
                 const hit = loggedCups >= notchCups;
 
@@ -153,7 +158,7 @@ export default function Home({ loggedMl, setLoggedMl, setResetTrigger }) {
                     marginTop: "4px",
                   }}
                 >
-                  {loggedCups.toFixed(1)} / {goalCups} cups
+                  {loggedCups.toFixed(1)} / {safeGoalCups} cups
                 </div>
               </div>
             </div>

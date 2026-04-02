@@ -15,7 +15,33 @@ const GOAL_OPTIONS = [
   "Evening hydration routine"
 ];
 
-function Profile() {
+function parseGoalCups(goalText) {
+  const normalized = goalText.trim().toLowerCase();
+
+  const drinkMatch = normalized.match(/drink\s+(\d+(?:\.\d+)?)/i);
+  if (drinkMatch) {
+    const drinkCups = Number(drinkMatch[1]);
+    if (Number.isFinite(drinkCups) && drinkCups > 0) return drinkCups;
+  }
+
+  const cupsMatch = normalized.match(/(\d+(?:\.\d+)?)\s*cups?/i);
+  if (cupsMatch) {
+    const cups = Number(cupsMatch[1]);
+    if (Number.isFinite(cups) && cups > 0) return cups;
+  }
+
+  if (normalized.includes("cup")) {
+    const fallbackNumber = normalized.match(/\d+(?:\.\d+)?/);
+    if (fallbackNumber) {
+      const cups = Number(fallbackNumber[0]);
+      if (Number.isFinite(cups) && cups > 0) return cups;
+    }
+  }
+
+  return null;
+}
+
+function Profile({ goalCups = 8, setGoalCups }) {
   const [user, setUser] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -97,6 +123,16 @@ function Profile() {
   const handleAddGoal = () => {
     let goalText = selectedGoal === "custom" ? customGoal.trim() : selectedGoal;
     if (!goalText) return;
+
+    const parsedCups = parseGoalCups(goalText);
+    const numericOnly = selectedGoal === "custom" ? Number(goalText) : NaN;
+    const nextGoalCups =
+      parsedCups ||
+      (Number.isFinite(numericOnly) && numericOnly > 0 ? numericOnly : null);
+
+    if (nextGoalCups && typeof setGoalCups === "function") {
+      setGoalCups(nextGoalCups);
+    }
 
     const newGoal = {
       id: Date.now(),
@@ -193,6 +229,10 @@ function Profile() {
               <label className="block text-sm font-medium text-gray-600">
                 Choose a hydration goal:
               </label>
+
+              <p className="text-sm text-gray-500">
+                Current Home goal: <span className="font-semibold">{goalCups} cups</span>
+              </p>
 
               <select
                 value={selectedGoal}
