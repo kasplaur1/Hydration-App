@@ -68,7 +68,7 @@ function Profile({ goalCups = 8, setGoalCups }) {
       await createUserWithEmailAndPassword(auth, email, password);
       setError("");
     } catch (err) {
-      setError(err.message);
+      setError(getFriendlyAuthError(err));
     }
   };
 
@@ -77,9 +77,35 @@ function Profile({ goalCups = 8, setGoalCups }) {
       await signInWithEmailAndPassword(auth, email, password);
       setError("");
     } catch (err) {
-      setError(err.message);
+      setError(getFriendlyAuthError(err));
     }
   };
+
+  const getFriendlyAuthError = (error) => {
+  switch (error.code) {
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+
+    case "auth/user-not-found":
+      return "No account found with this email.";
+
+    case "auth/wrong-password":
+      return "Incorrect password. Try again.";
+
+    case "auth/email-already-in-use":
+      return "This email is already registered.";
+
+    case "auth/weak-password":
+      return "Password should be at least 6 characters.";
+
+    case "auth/too-many-requests":
+      return "Too many attempts. Please wait and try again.";
+
+    default:
+      return "Something went wrong. Please try again.";
+  }
+};
+
 
   const handleLogout = () => {
     signOut(auth);
