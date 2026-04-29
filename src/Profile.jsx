@@ -95,14 +95,8 @@ function Profile({ goalCups = 8, setGoalCups }) {
     case "auth/email-already-in-use":
       return "This email is already registered.";
 
-    case "auth/weak-password":
-      return "Password should be at least 6 characters.";
-
-    case "auth/too-many-requests":
-      return "Too many attempts. Please wait and try again.";
-
     default:
-      return "Something went wrong. Please try again.";
+      return "Password does not match. Please Try again";
   }
 };
 
