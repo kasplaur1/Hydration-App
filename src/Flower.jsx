@@ -5,7 +5,7 @@ import wateringCan from "./images/watering-can.png";
 const ML_PER_CUP = 240;
 const MAX_GROWTH = 8;
 
-function Flower({ loggedMl, resetTrigger }) {
+function Flower({ loggedMl }) {
   const [waterLevel, setWaterLevel] = useState(0);
   const [isPouring, setIsPouring] = useState(false);
   const [streamPos, setStreamPos] = useState({ x: 0, y: 0 });
@@ -21,8 +21,15 @@ function Flower({ loggedMl, resetTrigger }) {
     waterLevel < availableCups;
 
   useEffect(() => {
-    setWaterLevel(0);
-  }, [resetTrigger]);
+    const saved = localStorage.getItem("flowerWaterLevel");
+    if (saved !== null) {
+      setWaterLevel(parseInt(saved));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("flowerWaterLevel", waterLevel);
+  }, [waterLevel]);
 
   const handleWater = () => {
     if (!canWater) return;
@@ -36,7 +43,6 @@ function Flower({ loggedMl, resetTrigger }) {
 
     setIsPouring(true);
 
-    // spawn droplets repeatedly
     const interval = setInterval(() => {
       const id = dropId.current++;
 
@@ -50,7 +56,6 @@ function Flower({ loggedMl, resetTrigger }) {
         }
       ]);
 
-      // remove droplet later
       setTimeout(() => {
         setDroplets((prev) => prev.filter((d) => d.id !== id));
       }, 900);
@@ -66,7 +71,13 @@ function Flower({ loggedMl, resetTrigger }) {
   const getSize = () => 180 + waterLevel * 20;
 
   return (
-    <div style={{ padding: "40px", position: "relative" }}>
+    <div
+      style={{
+        padding: "40px",
+        position: "relative",
+        color: "#222" // ✅ GLOBAL TEXT COLOR
+      }}
+    >
       <style>
         {`
         @keyframes fall {
@@ -76,7 +87,9 @@ function Flower({ loggedMl, resetTrigger }) {
         `}
       </style>
 
-      <h2 style={{ textAlign: "center" }}>Water Your Flower 🌸</h2>
+      <h2 style={{ textAlign: "center", color: "#222" }}>
+        Water Your Flower 🌸
+      </h2>
 
       <div
         style={{
@@ -130,12 +143,17 @@ function Flower({ loggedMl, resetTrigger }) {
             borderRadius: "20px",
             boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
             width: "260px",
-            textAlign: "center"
+            textAlign: "center",
+            color: "#222" // ✅ FORCE DARK TEXT
           }}
         >
-          <h3>Flower Status</h3>
-          <p>🌱 Growth: {waterLevel} / {MAX_GROWTH}</p>
-          <p>💧 You drank: {availableCups} cups</p>
+          <h3 style={{ color: "#222" }}>Flower Status</h3>
+          <p style={{ color: "#222" }}>
+            🌱 Growth: {waterLevel} / {MAX_GROWTH}
+          </p>
+          <p style={{ color: "#222" }}>
+            💧 You drank: {availableCups} cups
+          </p>
 
           {waterLevel >= MAX_GROWTH && (
             <p style={{ fontWeight: "bold", color: "green" }}>
@@ -144,7 +162,7 @@ function Flower({ loggedMl, resetTrigger }) {
           )}
 
           {!canWater && waterLevel < MAX_GROWTH && (
-            <p style={{ marginTop: "10px", fontSize: "0.9rem" }}>
+            <p style={{ marginTop: "10px", fontSize: "0.9rem", color: "#222" }}>
               Drink more water on the Home page 💧
             </p>
           )}
